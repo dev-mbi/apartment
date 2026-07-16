@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Maintenance{% endblock %}
+{% block content %}
+<div class="mb-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Maintenance Requests</h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white p-4 rounded shadow">
+        <h2 class="font-bold mb-2">New Request</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label class="block text-sm font-medium">Apartment</label>
+                <select name="apartment_id" required class="w-full border rounded px-3 py-2">
+                    {% for a in apartments %}
+                    <option value="{{ a.id }}">{{ a.unit_no }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3"><label class="block text-sm font-medium">Title</label><input name="title" required class="w-full border rounded px-3 py-2"></div>
+            <div class="mb-3"><label class="block text-sm font-medium">Description</label><textarea name="description" class="w-full border rounded px-3 py-2"></textarea></div>
+            <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Submit</button>
+        </form>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow">
+        <h2 class="font-bold mb-2">All Requests</h2>
+        <table class="w-full text-sm">
+            <thead><tr class="border-b"><th class="text-left py-2">Unit</th><th>Title</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            {% for r in requests %}
+            <tr class="border-b">
+                <td class="py-2">{{ r.apartment.unit_no }}</td>
+                <td>{{ r.title }}</td>
+                <td><span class="px-2 py-1 rounded text-xs {{ 'bg-yellow-200' if r.status == 'pending' else 'bg-blue-200' if r.status == 'in_progress' else 'bg-green-200' }}">{{ r.status }}</span></td>
+                <td class="space-x-1 text-xs">
+                    {% if r.status == 'pending' %}<a href="{{ url_for('apartment.update_maintenance', m_id=r.id, status='in_progress') }}" class="text-blue-600">Start</a>{% endif %}
+                    {% if r.status == 'in_progress' %}<a href="{{ url_for('apartment.update_maintenance', m_id=r.id, status='done') }}" class="text-green-600">Done</a>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

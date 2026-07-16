@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Masjid Fund{% endblock %}
+{% block content %}
+<div class="mb-4">
+    <h1 class="text-2xl font-bold">Masjid Fund Management</h1>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white p-4 rounded shadow"><strong>Total Donations</strong><br>₹{{ "%.2f"|format(total_donations) }}</div>
+    <div class="bg-white p-4 rounded shadow"><strong>Total Expenses</strong><br>₹{{ "%.2f"|format(total_expenses) }}</div>
+    <div class="bg-white p-4 rounded shadow"><strong>Balance</strong><br>₹{{ "%.2f"|format(balance) }}</div>
+</div>
+
+<div class="flex gap-4 mb-6">
+    <a href="{{ url_for('masjid.add_donation') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">+ Add Donation</a>
+    <a href="{{ url_for('masjid.add_expense') }}" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">+ Add Expense</a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white p-4 rounded shadow">
+        <h2 class="font-bold mb-2">Recent Donations</h2>
+        <table class="w-full text-sm">
+            <thead><tr class="border-b"><th class="text-left py-2">Amount</th><th class="text-left">Note</th><th class="text-left">Date</th></tr></thead>
+            <tbody>
+            {% for d in donations %}
+            <tr class="border-b">
+                <td class="py-2">₹{{ "%.2f"|format(d.amount) }}</td>
+                <td>{{ d.note or '—' }}</td>
+                <td>{{ d.created_at.strftime('%d-%m-%Y') }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow">
+        <h2 class="font-bold mb-2">Recent Expenses</h2>
+        <table class="w-full text-sm">
+            <thead><tr class="border-b"><th class="text-left py-2">Amount</th><th class="text-left">Category</th><th class="text-left">Date</th></tr></thead>
+            <tbody>
+            {% for e in expenses %}
+            <tr class="border-b">
+                <td class="py-2">₹{{ "%.2f"|format(e.amount) }}</td>
+                <td>{{ e.category }}</td>
+                <td>{{ e.created_at.strftime('%d-%m-%Y') }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

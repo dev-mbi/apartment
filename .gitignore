@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+instance/
+*.db
+.env
+node_modules/
+static/css/output.css
+dist/
+*.egg-info/
+.DS_Store

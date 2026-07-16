@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Apartments{% endblock %}
+{% block content %}
+<div class="mb-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Apartment Management</h1>
+    <a href="{{ url_for('apartment.add_apartment') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">+ Add Apartment</a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white p-4 rounded shadow"><strong>Total Units</strong><br>{{ total }}</div>
+    <div class="bg-white p-4 rounded shadow"><strong>Occupied</strong><br>{{ occupied }}</div>
+    <div class="bg-white p-4 rounded shadow"><strong>Pending Complaints</strong><br>{{ pending_complaints }}</div>
+    <div class="bg-white p-4 rounded shadow"><strong>Pending Maintenance</strong><br>{{ pending_maintenance }}</div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white p-4 rounded shadow">
+        <h2 class="font-bold mb-2">Apartments</h2>
+        <table class="w-full text-sm">
+            <thead><tr class="border-b"><th class="text-left py-2">Unit</th><th class="text-left">Floor</th><th class="text-left">Owner</th><th></th></tr></thead>
+            <tbody>
+            {% for apt in apartments %}
+            <tr class="border-b">
+                <td class="py-2">{{ apt.unit_no }}</td>
+                <td>{{ apt.floor }}</td>
+                <td>{{ apt.owner_name or '—' }}</td>
+                <td><a href="{{ url_for('apartment.view_apartment', apt_id=apt.id) }}" class="text-blue-600">View</a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow">
+        <h2 class="font-bold mb-2">Recent Announcements</h2>
+        {% for a in announcements %}
+        <div class="border-b py-2">
+            <strong>{{ a.title }}</strong>
+            <p class="text-sm text-gray-600">{{ a.content }}</p>
+            <span class="text-xs text-gray-400">{{ a.created_at.strftime('%Y-%m-%d') }}</span>
+        </div>
+        {% endfor %}
+        <a href="{{ url_for('apartment.announcements') }}" class="text-blue-600 text-sm mt-2 inline-block">View all</a>
+    </div>
+</div>
+
+<div class="flex gap-4 mt-6">
+    <a href="{{ url_for('apartment.complaints') }}" class="bg-white px-4 py-2 rounded shadow hover:bg-gray-50">Complaints</a>
+    <a href="{{ url_for('apartment.maintenance') }}" class="bg-white px-4 py-2 rounded shadow hover:bg-gray-50">Maintenance</a>
+</div>
+{% endblock %}

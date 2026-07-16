@@ -1,0 +1,165 @@
+# Graphify — Diagrams
+
+## ER Diagram
+
+```mermaid
+erDiagram
+    User {
+        int id PK
+        string username
+        string email
+        string password_hash
+        string role
+    }
+
+    Apartment {
+        int id PK
+        string unit_no
+        int floor
+        string owner_name
+        string owner_phone
+        string owner_email
+    }
+
+    Resident {
+        int id PK
+        int user_id FK
+        int apartment_id FK
+        string phone
+    }
+
+    Complaint {
+        int id PK
+        int apartment_id FK
+        string title
+        text description
+        string status
+        datetime created_at
+    }
+
+    MaintenanceRequest {
+        int id PK
+        int apartment_id FK
+        string title
+        text description
+        string status
+        datetime created_at
+    }
+
+    Announcement {
+        int id PK
+        string title
+        text content
+        datetime created_at
+        int author_id FK
+    }
+
+    Donation {
+        int id PK
+        float amount
+        string note
+        datetime created_at
+    }
+
+    Expense {
+        int id PK
+        float amount
+        string category
+        text description
+        datetime created_at
+    }
+
+    User ||--o{ Resident : "has"
+    User ||--o{ Announcement : "authors"
+    Apartment ||--o{ Resident : "houses"
+    Apartment ||--o{ Complaint : "has"
+    Apartment ||--o{ MaintenanceRequest : "has"
+```
+
+## System Architecture
+
+```mermaid
+graph TD
+    subgraph "Frontend"
+        HTML["HTML + Jinja2 Templates"]
+        CSS["Tailwind CSS"]
+        JS["JavaScript"]
+    end
+
+    subgraph "Backend"
+        Flask["Flask App Factory"]
+        Blueprints["Blueprints<br/>(auth, apartment, masjid)"]
+        Models["SQLAlchemy Models"]
+    end
+
+    subgraph "Database"
+        SQLite["SQLite / PostgreSQL"]
+    end
+
+    subgraph "DevOps"
+        Docker["Docker + Compose"]
+        CI["GitHub Actions"]
+    end
+
+    HTML --> Flask
+    CSS --> HTML
+    JS --> HTML
+    Flask --> Blueprints
+    Blueprints --> Models
+    Models --> SQLite
+    Docker --> Flask
+    CI --> Docker
+```
+
+## Request Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant B as Browser
+    participant F as Flask
+    participant A as Auth Blueprint
+    participant AP as Apartment Blueprint
+    participant M as Masjid Blueprint
+    participant DB as Database
+
+    U->>B: Visit /auth/login
+    B->>F: GET /auth/login
+    F->>A: Route to auth
+    A->>B: Return login page
+
+    U->>B: Submit credentials
+    B->>F: POST /auth/login
+    F->>A: Authenticate
+    A->>DB: Query user
+    DB-->>A: User found
+    A->>B: Redirect to dashboard
+
+    U->>B: Click Apartment Management
+    B->>F: GET /apartment/
+    F->>AP: Route to apartment
+    AP->>DB: Query stats
+    DB-->>AP: Data
+    AP->>B: Render apartment page
+
+    U->>B: Click Masjid Fund
+    B->>F: GET /masjid/
+    F->>M: Route to masjid
+    M->>DB: Query donations, expenses
+    DB-->>M: Data
+    M->>B: Render masjid page
+```
+
+## Deployment Flow
+
+```mermaid
+graph LR
+    Dev["Developer commits code"] --> GitHub
+    GitHub --> CI["GitHub Actions runs CI"]
+    CI --> Build["Builds Docker image"]
+    CI --> Lint["Runs linter"]
+    CI --> Test["Verifies app starts"]
+    Build --> Push["Push to registry"]
+    Push --> Deploy["Deploy to server"]
+    Deploy --> Running["docker compose up"]
+```

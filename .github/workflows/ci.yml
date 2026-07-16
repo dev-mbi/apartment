@@ -1,0 +1,31 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install ruff
+
+      - name: Lint with ruff
+        run: ruff check . --ignore=E402,F401 --exit-zero
+
+      - name: Test app import
+        run: python3 -c "
+          from app import create_app
+          app = create_app()
+          print(f'Routes: {len(app.url_map.iter_rules())}')
+          print('App started OK')
+          "

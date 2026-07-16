@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Announcements{% endblock %}
+{% block content %}
+<div class="mb-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Announcements</h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white p-4 rounded shadow">
+        <h2 class="font-bold mb-2">New Announcement</h2>
+        <form method="POST">
+            <div class="mb-3"><label class="block text-sm font-medium">Title</label><input name="title" required class="w-full border rounded px-3 py-2"></div>
+            <div class="mb-3"><label class="block text-sm font-medium">Content</label><textarea name="content" required class="w-full border rounded px-3 py-2" rows="4"></textarea></div>
+            <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Post</button>
+        </form>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow">
+        <h2 class="font-bold mb-2">All Announcements</h2>
+        {% for a in announcements %}
+        <div class="border-b py-3">
+            <strong>{{ a.title }}</strong>
+            <p class="text-sm text-gray-600">{{ a.content }}</p>
+            <span class="text-xs text-gray-400">{{ a.created_at.strftime('%Y-%m-%d') }} by {{ a.author.username }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

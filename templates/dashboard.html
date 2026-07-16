@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+
+<h2 class="text-lg font-semibold mb-2">Apartment Overview</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white p-4 rounded shadow"><strong>Total Apartments</strong><br>{{ apt_count }}</div>
+    <div class="bg-white p-4 rounded shadow"><strong>Residents</strong><br>{{ resident_count }}</div>
+    <div class="bg-white p-4 rounded shadow"><strong>Pending Complaints</strong><br>{{ pending_complaints }}</div>
+</div>
+
+<h2 class="text-lg font-semibold mb-2">Masjid Fund Overview</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white p-4 rounded shadow"><strong>Total Donations</strong><br>₹{{ "%.2f"|format(total_donations) }}</div>
+    <div class="bg-white p-4 rounded shadow"><strong>Total Expenses</strong><br>₹{{ "%.2f"|format(total_expenses) }}</div>
+    <div class="bg-white p-4 rounded shadow"><strong>Balance</strong><br>₹{{ "%.2f"|format(balance) }}</div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <a href="{{ url_for('apartment.index') }}" class="bg-white p-6 rounded shadow hover:shadow-lg transition">
+        <h3 class="font-bold text-lg">Apartment Management</h3>
+        <p class="text-gray-600 text-sm">Apartments, residents, complaints & maintenance</p>
+    </a>
+    <a href="{{ url_for('masjid.index') }}" class="bg-white p-6 rounded shadow hover:shadow-lg transition">
+        <h3 class="font-bold text-lg">Masjid Fund</h3>
+        <p class="text-gray-600 text-sm">Donations, expenses & balance tracking</p>
+    </a>
+</div>
+{% endblock %}
