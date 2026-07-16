@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 
 from app import db
 from models.apartment import Apartment, Resident, Complaint, MaintenanceRequest, Announcement
+from models.user import User
 
 apartment_bp = Blueprint('apartment', __name__, url_prefix='/apartment')
 
@@ -10,7 +11,13 @@ apartment_bp = Blueprint('apartment', __name__, url_prefix='/apartment')
 @apartment_bp.route('/')
 @login_required
 def index():
-    apartments = Apartment.query.all()
+    q = request.args.get('q', '').strip()
+    query = Apartment.query
+    if q:
+        query = query.filter(
+            Apartment.unit_no.ilike(f'%{q}%') | Apartment.owner_name.ilike(f'%{q}%')
+        )
+    apartments = query.all()
     total = Apartment.query.count()
     occupied = Resident.query.count()
     pending_complaints = Complaint.query.filter_by(status='pending').count()
@@ -37,6 +44,35 @@ def add_apartment():
     return render_template('apartment/add_apartment.html')
 
 
+@apartment_bp.route('/<int:apt_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_apartment(apt_id):
+    apartment = Apartment.query.get_or_404(apt_id)
+    if request.method == 'POST':
+        apartment.unit_no = request.form['unit_no']
+        apartment.floor = request.form.get('floor', type=int)
+        apartment.owner_name = request.form.get('owner_name')
+        apartment.owner_phone = request.form.get('owner_phone')
+        apartment.owner_email = request.form.get('owner_email')
+        db.session.commit()
+        flash('Apartment updated', 'success')
+        return redirect(url_for('apartment.index'))
+    return render_template('apartment/edit_apartment.html', apartment=apartment)
+
+
+@apartment_bp.route('/<int:apt_id>/delete', methods=['POST'])
+@login_required
+def delete_apartment(apt_id):
+    apartment = Apartment.query.get_or_404(apt_id)
+    Resident.query.filter_by(apartment_id=apt_id).delete()
+    Complaint.query.filter_by(apartment_id=apt_id).delete()
+    MaintenanceRequest.query.filter_by(apartment_id=apt_id).delete()
+    db.session.delete(apartment)
+    db.session.commit()
+    flash('Apartment deleted', 'success')
+    return redirect(url_for('apartment.index'))
+
+
 @apartment_bp.route('/<int:apt_id>')
 @login_required
 def view_apartment(apt_id):
@@ -49,7 +85,6 @@ def view_apartment(apt_id):
 def add_resident(apt_id):
     apartment = Apartment.query.get_or_404(apt_id)
     if request.method == 'POST':
-        from models.user import User
         user_id = request.form.get('user_id', type=int)
         user = User.query.get(user_id)
         if not user:
@@ -86,6 +121,20 @@ def complaints():
     return render_template('apartment/complaints.html', **locals())
 
 
+@apartment_bp.route('/complaints/<int:c_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_complaint(c_id):
+    complaint = Complaint.query.get_or_404(c_id)
+    if request.method == 'POST':
+        complaint.title = request.form['title']
+        complaint.description = request.form.get('description')
+        db.session.commit()
+        flash('Complaint updated', 'success')
+        return redirect(url_for('apartment.complaints'))
+    apartments = Apartment.query.all()
+    return render_template('apartment/edit_complaint.html', complaint=complaint, apartments=apartments)
+
+
 @apartment_bp.route('/complaints/<int:c_id>/resolve')
 @login_required
 def resolve_complaint(c_id):
@@ -112,6 +161,20 @@ def maintenance():
     requests = MaintenanceRequest.query.order_by(MaintenanceRequest.created_at.desc()).all()
     apartments = Apartment.query.all()
     return render_template('apartment/maintenance.html', **locals())
+
+
+@apartment_bp.route('/maintenance/<int:m_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_maintenance(m_id):
+    mr = MaintenanceRequest.query.get_or_404(m_id)
+    if request.method == 'POST':
+        mr.title = request.form['title']
+        mr.description = request.form.get('description')
+        db.session.commit()
+        flash('Maintenance request updated', 'success')
+        return redirect(url_for('apartment.maintenance'))
+    apartments = Apartment.query.all()
+    return render_template('apartment/edit_maintenance.html', mr=mr, apartments=apartments)
 
 
 @apartment_bp.route('/maintenance/<int:m_id>/update/<status>')

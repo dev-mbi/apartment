@@ -1,0 +1,130 @@
+================================================================================
+  SMART APARTMENT & MASJID FUND MANAGEMENT SYSTEM — PROJECT STATUS
+================================================================================
+
+Repository : https://github.com/dev-mbi/apartment
+Local path : /home/mbi/appartment
+Server     : http://127.0.0.1:5000
+Login      : admin / admin123
+
+================================================================================
+  COMPLETED
+================================================================================
+
+  Phase 1 — Project Scaffolding
+  - Flask app factory pattern (create_app in app.py)
+  - Config with SQLite (config.py)
+  - Tailwind CSS via npm (installed, built to static/css/output.css)
+  - Base template with sidebar navigation
+  - Folder structure: models/, routes/, templates/, static/, services/, utils/
+
+  Phase 2 — Authentication
+  - User model with roles: admin, resident
+  - Login / Logout / Register (admin-only registration)
+  - Flask-Login integration
+  - Password hashing with werkzeug
+
+  Phase 3 — Apartment Module
+  - Models: Apartment, Resident, Complaint, MaintenanceRequest, Announcement
+  - Routes: add/view apartments, add residents, complaints, maintenance, announcements
+  - Stats dashboard (total units, occupied, pending complaints)
+  - Status workflow: complaint (pending→resolved), maintenance (pending→in_progress→done)
+
+  Phase 4 — Masjid Fund Module
+  - Models: Donation (no donor name), Expense
+  - Routes: add donation, add expense, view balance, transaction history
+  - Categories: Electricity, Water, Cleaning, Maintenance, Salary, Other
+  - Rs (PKR) currency throughout
+
+  Phase 5 — Dashboard & UI
+  - Central dashboard with real stats from both modules
+  - Sidebar navigation with links to both modules
+  - Responsive Tailwind layout
+  - Flash messages for success/error
+
+  Phase 6 — Docker
+  - Dockerfile (Python 3.12-slim, builds Tailwind, runs Gunicorn)
+  - docker-compose.yml (web service, SQLite volume)
+  - .dockerignore
+
+  Phase 7 — CI/CD
+  - .github/workflows/ci.yml
+  - Steps: install deps, ruff lint, app import test
+
+  Graphify Diagrams (GRAPHIFY.md)
+  - ER diagram (all 8 tables with relationships)
+  - System architecture diagram
+  - Request flow sequence diagram
+  - Deployment flow diagram
+
+  Git & GitHub
+  - Initialized git repo
+  - Pushed to https://github.com/dev-mbi/apartment (master branch)
+  - .gitignore excludes venv/, node_modules/, package-lock.json, *.pyc, etc.
+
+================================================================================
+  SKILLS ACTIVE
+================================================================================
+
+  Caveman  : Active (terse output, code first, no filler)
+  Ponytail : Active (YAGNI, stdlib first, minimal code, no unnecessary abstractions)
+
+================================================================================
+  PENDING / NEXT STEPS
+================================================================================
+
+  [ ] PostgreSQL support in config.py (optional)
+  [ ] Edit/delete for apartments, complaints, donations, expenses
+  [ ] Pagination for transaction history (masjid fund)
+  [ ] Search/filter for apartments
+  [ ] Unit tests (pytest)
+  [ ] Production deployment guide
+
+================================================================================
+  FILE STRUCTURE
+================================================================================
+
+  appartment/
+  ├── app.py                  # Flask app factory
+  ├── config.py               # Configuration
+  ├── run.py                  # Dev server entry
+  ├── seed_admin.py           # Create first admin user
+  ├── requirements.txt        # Python dependencies
+  ├── package.json            # Tailwind npm setup
+  ├── tailwind.config.js
+  ├── Dockerfile
+  ├── docker-compose.yml
+  ├── .gitignore
+  ├── .dockerignore
+  ├── README.md               # Full project docs
+  ├── GRAPHIFY.md              # Mermaid diagrams (ER, arch, flow)
+  ├── PROJECT_STATUS.txt       # This file
+  │
+  ├── models/
+  │   ├── user.py             # User (id, username, email, password_hash, role)
+  │   ├── apartment.py        # Apartment, Resident, Complaint, MaintenanceRequest, Announcement
+  │   └── masjid.py           # Donation, Expense
+  │
+  ├── routes/
+  │   ├── auth_routes.py      # Login, Register, Logout, Dashboard
+  │   ├── apartment_routes.py # Apartment CRUD, residents, complaints, maintenance
+  │   └── masjid_routes.py    # Donations, expenses, balance
+  │
+  ├── templates/
+  │   ├── base.html           # Sidebar layout
+  │   ├── dashboard.html      # Stats cards
+  │   ├── login.html
+  │   ├── register.html
+  │   ├── apartment/          # 7 templates
+  │   └── masjid/             # 3 templates
+  │
+  ├── static/
+  │   ├── css/input.css       # Tailwind source
+  │   ├── css/output.css      # Built Tailwind
+  │   └── js/main.js
+  │
+  ├── services/               # Empty (ready for business logic)
+  ├── utils/                  # Empty (ready for helpers)
+  └── .github/workflows/ci.yml
+
+================================================================================

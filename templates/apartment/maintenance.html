@@ -33,7 +33,8 @@
                 <td class="py-2">{{ r.apartment.unit_no }}</td>
                 <td>{{ r.title }}</td>
                 <td><span class="px-2 py-1 rounded text-xs {{ 'bg-yellow-200' if r.status == 'pending' else 'bg-blue-200' if r.status == 'in_progress' else 'bg-green-200' }}">{{ r.status }}</span></td>
-                <td class="space-x-1 text-xs">
+                <td class="space-x-2 text-xs">
+                    <a href="{{ url_for('apartment.edit_maintenance', m_id=r.id) }}" class="text-indigo-600">Edit</a>
                     {% if r.status == 'pending' %}<a href="{{ url_for('apartment.update_maintenance', m_id=r.id, status='in_progress') }}" class="text-blue-600">Start</a>{% endif %}
                     {% if r.status == 'in_progress' %}<a href="{{ url_for('apartment.update_maintenance', m_id=r.id, status='done') }}" class="text-green-600">Done</a>{% endif %}
                 </td>

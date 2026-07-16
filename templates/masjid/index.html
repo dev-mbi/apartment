@@ -20,33 +20,79 @@
     <div class="bg-white p-4 rounded shadow">
         <h2 class="font-bold mb-2">Recent Donations</h2>
         <table class="w-full text-sm">
-            <thead><tr class="border-b"><th class="text-left py-2">Amount</th><th class="text-left">Note</th><th class="text-left">Date</th></tr></thead>
+            <thead><tr class="border-b"><th class="text-left py-2">Amount</th><th class="text-left">Note</th><th class="text-left">Date</th><th></th></tr></thead>
             <tbody>
             {% for d in donations %}
             <tr class="border-b">
                 <td class="py-2">Rs {{ "%.2f"|format(d.amount) }}</td>
                 <td>{{ d.note or '—' }}</td>
                 <td>{{ d.created_at.strftime('%d-%m-%Y') }}</td>
+                <td class="space-x-2 text-sm">
+                    <a href="{{ url_for('masjid.edit_donation', d_id=d.id) }}" class="text-indigo-600">Edit</a>
+                    <form method="POST" action="{{ url_for('masjid.delete_donation', d_id=d.id) }}" class="inline" onsubmit="return confirm('Delete this donation?')">
+                        <button class="text-red-600 hover:underline">Delete</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
             </tbody>
         </table>
+        {% if donations.pages > 1 %}
+        <div class="flex gap-1 mt-3 items-center justify-center text-sm">
+            {% if donations.has_prev %}
+            <a href="?donation_page={{ donations.prev_num }}&expense_page={{ expense_page }}" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">Prev</a>
+            {% endif %}
+            {% for p in donations.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if p %}
+                <a href="?donation_page={{ p }}&expense_page={{ expense_page }}" class="px-2 py-1 rounded {% if p == donations.page %}bg-blue-600 text-white{% else %}bg-gray-200 hover:bg-gray-300{% endif %}">{{ p }}</a>
+                {% else %}
+                <span class="px-1">…</span>
+                {% endif %}
+            {% endfor %}
+            {% if donations.has_next %}
+            <a href="?donation_page={{ donations.next_num }}&expense_page={{ expense_page }}" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 
     <div class="bg-white p-4 rounded shadow">
         <h2 class="font-bold mb-2">Recent Expenses</h2>
         <table class="w-full text-sm">
-            <thead><tr class="border-b"><th class="text-left py-2">Amount</th><th class="text-left">Category</th><th class="text-left">Date</th></tr></thead>
+            <thead><tr class="border-b"><th class="text-left py-2">Amount</th><th class="text-left">Category</th><th class="text-left">Date</th><th></th></tr></thead>
             <tbody>
             {% for e in expenses %}
             <tr class="border-b">
                 <td class="py-2">Rs {{ "%.2f"|format(e.amount) }}</td>
                 <td>{{ e.category }}</td>
                 <td>{{ e.created_at.strftime('%d-%m-%Y') }}</td>
+                <td class="space-x-2 text-sm">
+                    <a href="{{ url_for('masjid.edit_expense', e_id=e.id) }}" class="text-indigo-600">Edit</a>
+                    <form method="POST" action="{{ url_for('masjid.delete_expense', e_id=e.id) }}" class="inline" onsubmit="return confirm('Delete this expense?')">
+                        <button class="text-red-600 hover:underline">Delete</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
             </tbody>
         </table>
+        {% if expenses.pages > 1 %}
+        <div class="flex gap-1 mt-3 items-center justify-center text-sm">
+            {% if expenses.has_prev %}
+            <a href="?donation_page={{ donation_page }}&expense_page={{ expenses.prev_num }}" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">Prev</a>
+            {% endif %}
+            {% for p in expenses.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if p %}
+                <a href="?donation_page={{ donation_page }}&expense_page={{ p }}" class="px-2 py-1 rounded {% if p == expenses.page %}bg-blue-600 text-white{% else %}bg-gray-200 hover:bg-gray-300{% endif %}">{{ p }}</a>
+                {% else %}
+                <span class="px-1">…</span>
+                {% endif %}
+            {% endfor %}
+            {% if expenses.has_next %}
+            <a href="?donation_page={{ donation_page }}&expense_page={{ expenses.next_num }}" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

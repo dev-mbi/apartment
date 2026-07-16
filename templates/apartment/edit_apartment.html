@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Edit Apartment{% endblock %}
+{% block content %}
+<div class="max-w-lg mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-2xl font-bold mb-4">Edit Apartment {{ apartment.unit_no }}</h2>
+    <form method="POST">
+        <div class="mb-3"><label class="block text-sm font-medium">Unit No</label><input name="unit_no" value="{{ apartment.unit_no }}" required class="w-full border rounded px-3 py-2"></div>
+        <div class="mb-3"><label class="block text-sm font-medium">Floor</label><input name="floor" type="number" value="{{ apartment.floor or '' }}" class="w-full border rounded px-3 py-2"></div>
+        <div class="mb-3"><label class="block text-sm font-medium">Owner Name</label><input name="owner_name" value="{{ apartment.owner_name or '' }}" class="w-full border rounded px-3 py-2"></div>
+        <div class="mb-3"><label class="block text-sm font-medium">Owner Phone</label><input name="owner_phone" value="{{ apartment.owner_phone or '' }}" class="w-full border rounded px-3 py-2"></div>
+        <div class="mb-3"><label class="block text-sm font-medium">Owner Email</label><input name="owner_email" type="email" value="{{ apartment.owner_email or '' }}" class="w-full border rounded px-3 py-2"></div>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update</button>
+        <a href="{{ url_for('apartment.index') }}" class="ml-2 text-gray-600">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -32,7 +32,7 @@ erDiagram
         int id PK
         int apartment_id FK
         string title
-        text description
+        string description
         string status
         datetime created_at
     }
@@ -41,7 +41,7 @@ erDiagram
         int id PK
         int apartment_id FK
         string title
-        text description
+        string description
         string status
         datetime created_at
     }
@@ -49,7 +49,7 @@ erDiagram
     Announcement {
         int id PK
         string title
-        text content
+        string content
         datetime created_at
         int author_id FK
     }
@@ -65,7 +65,7 @@ erDiagram
         int id PK
         float amount
         string category
-        text description
+        string description
         datetime created_at
     }
 
