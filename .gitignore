@@ -4,6 +4,8 @@ instance/
 *.db
 .env
 node_modules/
+venv/
+package-lock.json
 static/css/output.css
 dist/
 *.egg-info/
