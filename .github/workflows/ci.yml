@@ -28,10 +28,10 @@ jobs:
           npm run build:css
 
       - name: Lint with ruff
-        run: python -m ruff check . --ignore=E402,F401 --exit-zero
+        run: ruff check . || true
 
       - name: Test app import
         run: python3 scripts/test_import.py
 
       - name: Run tests
-        run: python -m pytest tests/ -v
+        run: python3 -m pytest tests/ -v
