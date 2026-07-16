@@ -6,9 +6,9 @@
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-    <div class="bg-white p-4 rounded shadow"><strong>Total Donations</strong><br>₹{{ "%.2f"|format(total_donations) }}</div>
-    <div class="bg-white p-4 rounded shadow"><strong>Total Expenses</strong><br>₹{{ "%.2f"|format(total_expenses) }}</div>
-    <div class="bg-white p-4 rounded shadow"><strong>Balance</strong><br>₹{{ "%.2f"|format(balance) }}</div>
+    <div class="bg-white p-4 rounded shadow"><strong>Total Donations</strong><br>Rs {{ "%.2f"|format(total_donations) }}</div>
+    <div class="bg-white p-4 rounded shadow"><strong>Total Expenses</strong><br>Rs {{ "%.2f"|format(total_expenses) }}</div>
+    <div class="bg-white p-4 rounded shadow"><strong>Balance</strong><br>Rs {{ "%.2f"|format(balance) }}</div>
 </div>
 
 <div class="flex gap-4 mb-6">
@@ -24,7 +24,7 @@
             <tbody>
             {% for d in donations %}
             <tr class="border-b">
-                <td class="py-2">₹{{ "%.2f"|format(d.amount) }}</td>
+                <td class="py-2">Rs {{ "%.2f"|format(d.amount) }}</td>
                 <td>{{ d.note or '—' }}</td>
                 <td>{{ d.created_at.strftime('%d-%m-%Y') }}</td>
             </tr>
@@ -40,7 +40,7 @@
             <tbody>
             {% for e in expenses %}
             <tr class="border-b">
-                <td class="py-2">₹{{ "%.2f"|format(e.amount) }}</td>
+                <td class="py-2">Rs {{ "%.2f"|format(e.amount) }}</td>
                 <td>{{ e.category }}</td>
                 <td>{{ e.created_at.strftime('%d-%m-%Y') }}</td>
             </tr>
