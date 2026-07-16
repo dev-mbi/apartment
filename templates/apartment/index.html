@@ -1,65 +1,123 @@
 {% extends "base.html" %}
 {% block title %}Apartments{% endblock %}
 {% block content %}
-<div class="mb-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold">Apartment Management</h1>
-    <a href="{{ url_for('apartment.add_apartment') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">+ Add Apartment</a>
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">Apartment Management</h1>
+        <p class="text-gray-500 text-sm">Manage all apartment units and residents</p>
+    </div>
+    <a href="{{ url_for('apartment.add_apartment') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white px-5 py-2.5 rounded-xl font-medium hover:from-primary-700 hover:to-primary-800 transition shadow-lg shadow-primary-500/25">
+        <i class="fas fa-plus"></i> Add Apartment
+    </a>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-    <div class="bg-white p-4 rounded shadow"><strong>Total Units</strong><br>{{ total }}</div>
-    <div class="bg-white p-4 rounded shadow"><strong>Occupied</strong><br>{{ occupied }}</div>
-    <div class="bg-white p-4 rounded shadow"><strong>Pending Complaints</strong><br>{{ pending_complaints }}</div>
-    <div class="bg-white p-4 rounded shadow"><strong>Pending Maintenance</strong><br>{{ pending_maintenance }}</div>
+    <div class="bg-white rounded-xl shadow-sm border-l-4 border-primary-500 p-4">
+        <p class="text-xs text-gray-500 uppercase tracking-wide font-medium">Total Units</p>
+        <p class="text-2xl font-bold text-gray-800 mt-1">{{ total }}</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border-l-4 border-accent-500 p-4">
+        <p class="text-xs text-gray-500 uppercase tracking-wide font-medium">Occupied</p>
+        <p class="text-2xl font-bold text-gray-800 mt-1">{{ occupied }}</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border-l-4 border-warm-500 p-4">
+        <p class="text-xs text-gray-500 uppercase tracking-wide font-medium">Pending Complaints</p>
+        <p class="text-2xl font-bold text-gray-800 mt-1">{{ pending_complaints }}</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border-l-4 border-blue-500 p-4">
+        <p class="text-xs text-gray-500 uppercase tracking-wide font-medium">Pending Maintenance</p>
+        <p class="text-2xl font-bold text-gray-800 mt-1">{{ pending_maintenance }}</p>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white p-4 rounded shadow">
-        <h2 class="font-bold mb-2">Apartments</h2>
-        <form method="GET" class="mb-3 flex gap-2">
-            <input type="text" name="q" value="{{ q }}" placeholder="Search by unit or owner..."
-                   class="border px-3 py-1.5 rounded text-sm flex-1">
-            <button type="submit" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-700">Search</button>
-            {% if q %}
-            <a href="{{ url_for('apartment.index') }}" class="bg-gray-300 text-gray-700 px-3 py-1.5 rounded text-sm hover:bg-gray-400">Clear</a>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-r from-primary-500 to-primary-700 px-5 py-3 flex items-center justify-between">
+            <h2 class="font-semibold text-white"><i class="fas fa-list mr-2"></i>Apartments</h2>
+            <span class="text-xs text-white/80 bg-white/20 px-2 py-1 rounded-full">{{ apartments|length }} total</span>
+        </div>
+        <div class="p-5">
+            <form method="GET" class="mb-4 flex gap-2">
+                <div class="relative flex-1">
+                    <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                    <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search by unit or owner..." class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                </div>
+                <button class="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-primary-700 transition"><i class="fas fa-search"></i></button>
+                {% if request.args.get('q') %}<a href="{{ url_for('apartment.index') }}" class="bg-gray-200 text-gray-600 px-3 py-2 rounded-lg text-sm hover:bg-gray-300 transition"><i class="fas fa-times"></i></a>{% endif %}
+            </form>
+            {% if apartments %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-200 text-gray-500 uppercase text-xs tracking-wider">
+                            <th class="text-left py-3 font-medium">Unit</th>
+                            <th class="text-left font-medium">Floor</th>
+                            <th class="text-left font-medium">Owner</th>
+                            <th class="text-right font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                    {% for apt in apartments %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="py-3 font-medium text-gray-800">{{ apt.unit_no }}</td>
+                        <td class="py-3 text-gray-600">{{ apt.floor or '—' }}</td>
+                        <td class="py-3 text-gray-600">{{ apt.owner_name or '—' }}</td>
+                        <td class="py-3 text-right space-x-1">
+                            <a href="{{ url_for('apartment.view_apartment', apt_id=apt.id) }}" class="text-primary-600 hover:text-primary-800 text-xs px-2 py-1 rounded bg-primary-50 hover:bg-primary-100 transition"><i class="fas fa-eye"></i></a>
+                            <a href="{{ url_for('apartment.edit_apartment', apt_id=apt.id) }}" class="text-warm-600 hover:text-warm-800 text-xs px-2 py-1 rounded bg-amber-50 hover:bg-amber-100 transition"><i class="fas fa-edit"></i></a>
+                            <form action="{{ url_for('apartment.delete_apartment', apt_id=apt.id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this apartment and all associated data?')">
+                                <button class="text-red-500 hover:text-red-700 text-xs px-2 py-1 rounded bg-red-50 hover:bg-red-100 transition"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-gray-400">
+                <i class="fas fa-building text-4xl mb-3"></i>
+                <p>No apartments found</p>
+            </div>
             {% endif %}
-        </form>
-        <table class="w-full text-sm">
-            <thead><tr class="border-b"><th class="text-left py-2">Unit</th><th class="text-left">Floor</th><th class="text-left">Owner</th><th></th></tr></thead>
-            <tbody>
-            {% for apt in apartments %}
-            <tr class="border-b">
-                <td class="py-2">{{ apt.unit_no }}</td>
-                <td>{{ apt.floor }}</td>
-                <td>{{ apt.owner_name or '—' }}</td>
-                <td class="space-x-2 text-sm">
-                    <a href="{{ url_for('apartment.view_apartment', apt_id=apt.id) }}" class="text-blue-600">View</a>
-                    <a href="{{ url_for('apartment.edit_apartment', apt_id=apt.id) }}" class="text-indigo-600">Edit</a>
-                    <form method="POST" action="{{ url_for('apartment.delete_apartment', apt_id=apt.id) }}" class="inline" onsubmit="return confirm('Delete this apartment and all related data?')">
-                        <button class="text-red-600 hover:underline">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        </div>
     </div>
 
-    <div class="bg-white p-4 rounded shadow">
-        <h2 class="font-bold mb-2">Recent Announcements</h2>
-        {% for a in announcements %}
-        <div class="border-b py-2">
-            <strong>{{ a.title }}</strong>
-            <p class="text-sm text-gray-600">{{ a.content }}</p>
-            <span class="text-xs text-gray-400">{{ a.created_at.strftime('%Y-%m-%d') }}</span>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-r from-accent-500 to-emerald-600 px-5 py-3 flex items-center justify-between">
+            <h2 class="font-semibold text-white"><i class="fas fa-bullhorn mr-2"></i>Recent Announcements</h2>
+            <a href="{{ url_for('apartment.announcements') }}" class="text-xs text-white/80 hover:text-white transition"><i class="fas fa-plus"></i> New</a>
         </div>
-        {% endfor %}
-        <a href="{{ url_for('apartment.announcements') }}" class="text-blue-600 text-sm mt-2 inline-block">View all</a>
+        <div class="p-5">
+            {% for a in announcements %}
+            <div class="border-b border-gray-100 py-3 last:border-0">
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-full bg-accent-100 flex items-center justify-center flex-shrink-0 mt-1">
+                        <i class="fas fa-bullhorn text-accent-600 text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-800">{{ a.title }}</p>
+                        <p class="text-sm text-gray-500">{{ a.content }}</p>
+                        <p class="text-xs text-gray-400 mt-1"><i class="far fa-clock mr-1"></i>{{ a.created_at.strftime('%d %b %Y') }}</p>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-gray-400">
+                <i class="fas fa-bullhorn text-4xl mb-3"></i>
+                <p>No announcements yet</p>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
-<div class="flex gap-4 mt-6">
-    <a href="{{ url_for('apartment.complaints') }}" class="bg-white px-4 py-2 rounded shadow hover:bg-gray-50">Complaints</a>
-    <a href="{{ url_for('apartment.maintenance') }}" class="bg-white px-4 py-2 rounded shadow hover:bg-gray-50">Maintenance</a>
+<div class="flex gap-3 mt-6">
+    <a href="{{ url_for('apartment.complaints') }}" class="flex items-center gap-2 bg-white px-5 py-2.5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-primary-300 transition text-gray-700">
+        <i class="fas fa-exclamation-circle text-warm-500"></i> Complaints
+    </a>
+    <a href="{{ url_for('apartment.maintenance') }}" class="flex items-center gap-2 bg-white px-5 py-2.5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-primary-300 transition text-gray-700">
+        <i class="fas fa-tools text-blue-500"></i> Maintenance
+    </a>
 </div>
 {% endblock %}

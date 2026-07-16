@@ -1,29 +1,49 @@
 {% extends "base.html" %}
-{% block title %}Register{% endblock %}
+{% block title %}Register User{% endblock %}
 {% block content %}
-<div class="max-w-md mx-auto mt-20 bg-white p-6 rounded shadow">
-    <h2 class="text-2xl font-bold mb-4">Register User</h2>
-    <form method="POST">
-        <div class="mb-3">
-            <label class="block text-sm font-medium">Username</label>
-            <input type="text" name="username" required class="w-full border rounded px-3 py-2">
+<div class="max-w-lg mx-auto">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-primary-600 to-primary-800 p-6 text-center text-white">
+            <i class="fas fa-user-plus text-4xl mb-2"></i>
+            <h2 class="text-2xl font-bold">Register New User</h2>
+            <p class="text-primary-200 text-sm">Admin only — create resident or admin accounts</p>
         </div>
-        <div class="mb-3">
-            <label class="block text-sm font-medium">Email</label>
-            <input type="email" name="email" required class="w-full border rounded px-3 py-2">
-        </div>
-        <div class="mb-3">
-            <label class="block text-sm font-medium">Password</label>
-            <input type="password" name="password" required class="w-full border rounded px-3 py-2">
-        </div>
-        <div class="mb-3">
-            <label class="block text-sm font-medium">Role</label>
-            <select name="role" class="w-full border rounded px-3 py-2">
-                <option value="resident">Resident</option>
-                <option value="admin">Admin</option>
-            </select>
-        </div>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Register</button>
-    </form>
+        <form method="POST" class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <div class="relative">
+                    <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
+                    <input type="text" name="username" required class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <div class="relative">
+                    <i class="fas fa-envelope absolute left-3 top-3 text-gray-400"></i>
+                    <input type="email" name="email" required class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <div class="relative">
+                    <i class="fas fa-lock absolute left-3 top-3 text-gray-400"></i>
+                    <input type="password" name="password" required class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                <div class="relative">
+                    <i class="fas fa-user-tag absolute left-3 top-3 text-gray-400"></i>
+                    <select name="role" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition appearance-none bg-white">
+                        <option value="resident">Resident</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+            </div>
+            <button class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-2.5 rounded-lg font-medium hover:from-primary-700 hover:to-primary-800 transition shadow-lg shadow-primary-500/25">
+                <i class="fas fa-save mr-2"></i>Register
+            </button>
+        </form>
+    </div>
 </div>
 {% endblock %}

@@ -31,13 +31,7 @@ jobs:
         run: python -m ruff check . --ignore=E402,F401 --exit-zero
 
       - name: Test app import
-        run: |
-          python3 -c "
-from app import create_app
-app = create_app()
-print(f'Routes: {len(list(app.url_map.iter_rules()))}')
-print('App started OK')
-"
+        run: python3 scripts/test_import.py
 
       - name: Run tests
         run: python -m pytest tests/ -v
