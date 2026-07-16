@@ -19,19 +19,16 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Python deps
-        run: pip install -r requirements.txt
-
-      - name: Install JS deps & build CSS
+      - name: Install dependencies
         run: |
+          pip install -r requirements.txt
           npm install
           npm run build:css
 
-      - name: Lint with ruff
-        run: ruff check . || true
+      - name: Lint
+        run: pip install ruff && ruff check . || true
 
-      - name: Test app import
-        run: python3 scripts/test_import.py
-
-      - name: Run tests
-        run: python3 -m pytest tests/ -v
+      - name: Test
+        run: |
+          python -c "from app import create_app; app = create_app(); print('App OK')"
+          python -m pytest tests/ -v
