@@ -135,7 +135,7 @@ sequenceDiagram
     DB-->>A: User found
     A->>B: Redirect to dashboard
 
-    U->>B: Click Apartment Management
+    U->>B: Click Apartment
     B->>F: GET /apartment/
     F->>AP: Route to apartment
     AP->>DB: Query stats

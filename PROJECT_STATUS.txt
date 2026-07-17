@@ -49,7 +49,12 @@ Login      : admin / admin123
 
   Phase 7 — CI/CD
   - .github/workflows/ci.yml
-  - Steps: install deps, ruff lint, app import test
+  - Steps: install deps, ruff lint, app import test, pytest
+
+  Phase 8 — CRUD Completion
+  - Complaint delete route + template button
+  - Maintenance delete route + template button
+  - Tests for all edit/delete operations (apartment, complaint, maintenance, donation, expense)
 
   Graphify Diagrams (GRAPHIFY.md)
   - ER diagram (all 8 tables with relationships)
@@ -62,22 +67,19 @@ Login      : admin / admin123
   - Pushed to https://github.com/dev-mbi/apartment (master branch)
   - .gitignore excludes venv/, node_modules/, package-lock.json, *.pyc, etc.
 
-================================================================================
+===============================================================================
   SKILLS ACTIVE
-================================================================================
+===============================================================================
 
   Caveman  : Active (terse output, code first, no filler)
   Ponytail : Active (YAGNI, stdlib first, minimal code, no unnecessary abstractions)
 
-================================================================================
+===============================================================================
   PENDING / NEXT STEPS
-================================================================================
+===============================================================================
 
-  [ ] PostgreSQL support in config.py (optional)
-  [ ] Edit/delete for apartments, complaints, donations, expenses
-  [ ] Pagination for transaction history (masjid fund)
-  [ ] Search/filter for apartments
-  [ ] Unit tests (pytest)
+  [x] PostgreSQL support in config.py (optional)
+  [x] Edit/delete for announcements
   [ ] Production deployment guide
 
 ================================================================================

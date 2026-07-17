@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Edit Announcement{% endblock %}
+{% block content %}
+<div class="max-w-lg mx-auto bg-gray-900 p-6 rounded shadow text-gray-100">
+    <h2 class="text-2xl font-bold mb-4">Edit Announcement</h2>
+    <form method="POST">
+        <div class="mb-3"><label class="block text-sm font-medium text-gray-300">Title</label><input name="title" value="{{ announcement.title }}" required class="w-full border border-gray-600 rounded px-3 py-2 bg-gray-800 text-gray-100"></div>
+        <div class="mb-3"><label class="block text-sm font-medium text-gray-300">Content</label><textarea name="content" required class="w-full border border-gray-600 rounded px-3 py-2 bg-gray-800 text-gray-100" rows="4">{{ announcement.content }}</textarea></div>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update</button>
+        <a href="{{ url_for('apartment.announcements') }}" class="ml-2 text-gray-400 hover:text-gray-300">Cancel</a>
+    </form>
+</div>
+{% endblock %}

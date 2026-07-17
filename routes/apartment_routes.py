@@ -145,6 +145,16 @@ def resolve_complaint(c_id):
     return redirect(url_for('apartment.complaints'))
 
 
+@apartment_bp.route('/complaints/<int:c_id>/delete', methods=['POST'])
+@login_required
+def delete_complaint(c_id):
+    complaint = Complaint.query.get_or_404(c_id)
+    db.session.delete(complaint)
+    db.session.commit()
+    flash('Complaint deleted', 'success')
+    return redirect(url_for('apartment.complaints'))
+
+
 @apartment_bp.route('/maintenance', methods=['GET', 'POST'])
 @login_required
 def maintenance():
@@ -188,6 +198,16 @@ def update_maintenance(m_id, status):
     return redirect(url_for('apartment.maintenance'))
 
 
+@apartment_bp.route('/maintenance/<int:m_id>/delete', methods=['POST'])
+@login_required
+def delete_maintenance(m_id):
+    mr = MaintenanceRequest.query.get_or_404(m_id)
+    db.session.delete(mr)
+    db.session.commit()
+    flash('Maintenance request deleted', 'success')
+    return redirect(url_for('apartment.maintenance'))
+
+
 @apartment_bp.route('/announcements', methods=['GET', 'POST'])
 @login_required
 def announcements():
@@ -203,3 +223,32 @@ def announcements():
         return redirect(url_for('apartment.announcements'))
     announcements = Announcement.query.order_by(Announcement.created_at.desc()).all()
     return render_template('apartment/announcements.html', announcements=announcements)
+
+
+@apartment_bp.route('/announcements/<int:a_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_announcement(a_id):
+    if current_user.role != 'admin':
+        flash('Only admins can edit announcements', 'error')
+        return redirect(url_for('apartment.announcements'))
+    announcement = Announcement.query.get_or_404(a_id)
+    if request.method == 'POST':
+        announcement.title = request.form['title']
+        announcement.content = request.form['content']
+        db.session.commit()
+        flash('Announcement updated', 'success')
+        return redirect(url_for('apartment.announcements'))
+    return render_template('apartment/edit_announcement.html', announcement=announcement)
+
+
+@apartment_bp.route('/announcements/<int:a_id>/delete', methods=['POST'])
+@login_required
+def delete_announcement(a_id):
+    if current_user.role != 'admin':
+        flash('Only admins can delete announcements', 'error')
+        return redirect(url_for('apartment.announcements'))
+    announcement = Announcement.query.get_or_404(a_id)
+    db.session.delete(announcement)
+    db.session.commit()
+    flash('Announcement deleted', 'success')
+    return redirect(url_for('apartment.announcements'))

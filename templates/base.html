@@ -21,7 +21,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+<body class="bg-gray-950 min-h-screen">
     <div class="flex h-screen">
         {% if current_user.is_authenticated %}
         <aside class="w-64 bg-gradient-to-b from-primary-700 to-primary-900 text-white flex flex-col shadow-xl">
@@ -39,7 +39,7 @@
                 </a>
                 <a href="{{ url_for('apartment.index') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-white/10 transition {% if request.endpoint and 'apartment' in request.endpoint %}bg-white/15{% endif %}">
                     <i class="fas fa-door-open w-5 text-center"></i>
-                    <span>Apartment Mgmt</span>
+                    <span>Apartment</span>
                 </a>
                 <a href="{{ url_for('masjid.index') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-white/10 transition {% if request.endpoint and 'masjid' in request.endpoint %}bg-white/15{% endif %}">
                     <i class="fas fa-mosque w-5 text-center"></i>

@@ -2,26 +2,38 @@
 {% block title %}Announcements{% endblock %}
 {% block content %}
 <div class="mb-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold">Announcements</h1>
+    <h1 class="text-2xl font-bold text-gray-100">Announcements</h1>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white p-4 rounded shadow">
+    <div class="bg-gray-900 p-4 rounded shadow text-gray-100">
         <h2 class="font-bold mb-2">New Announcement</h2>
         <form method="POST">
-            <div class="mb-3"><label class="block text-sm font-medium">Title</label><input name="title" required class="w-full border rounded px-3 py-2"></div>
-            <div class="mb-3"><label class="block text-sm font-medium">Content</label><textarea name="content" required class="w-full border rounded px-3 py-2" rows="4"></textarea></div>
+            <div class="mb-3"><label class="block text-sm font-medium text-gray-300">Title</label><input name="title" required class="w-full border border-gray-600 rounded px-3 py-2 bg-gray-800 text-gray-100"></div>
+            <div class="mb-3"><label class="block text-sm font-medium text-gray-300">Content</label><textarea name="content" required class="w-full border border-gray-600 rounded px-3 py-2 bg-gray-800 text-gray-100" rows="4"></textarea></div>
             <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Post</button>
         </form>
     </div>
 
-    <div class="bg-white p-4 rounded shadow">
+    <div class="bg-gray-900 p-4 rounded shadow text-gray-100">
         <h2 class="font-bold mb-2">All Announcements</h2>
         {% for a in announcements %}
-        <div class="border-b py-3">
-            <strong>{{ a.title }}</strong>
-            <p class="text-sm text-gray-600">{{ a.content }}</p>
-            <span class="text-xs text-gray-400">{{ a.created_at.strftime('%Y-%m-%d') }} by {{ a.author.username }}</span>
+        <div class="border-b border-gray-700 py-3">
+            <div class="flex justify-between items-start">
+                <div>
+                    <strong class="text-gray-100">{{ a.title }}</strong>
+                    <p class="text-sm text-gray-300">{{ a.content }}</p>
+                    <span class="text-xs text-gray-500">{{ a.created_at.strftime('%Y-%m-%d') }} by {{ a.author.username }}</span>
+                </div>
+                {% if current_user.role == 'admin' %}
+                <div class="space-x-2 text-xs shrink-0 ml-4">
+                    <a href="{{ url_for('apartment.edit_announcement', a_id=a.id) }}" class="text-indigo-400 hover:text-indigo-300">Edit</a>
+                    <form method="POST" action="{{ url_for('apartment.delete_announcement', a_id=a.id) }}" class="inline" onsubmit="return confirm('Delete this announcement?')">
+                        <button class="text-red-400 hover:text-red-300 hover:underline">Delete</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
         </div>
         {% endfor %}
     </div>

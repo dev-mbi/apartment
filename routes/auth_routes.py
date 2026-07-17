@@ -5,7 +5,7 @@ from sqlalchemy import func
 
 from app import db, login_manager
 from models.user import User
-from models.apartment import Apartment, Resident, Complaint, MaintenanceRequest
+from models.apartment import Apartment, Resident, Complaint
 from models.masjid import Donation, Expense
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')

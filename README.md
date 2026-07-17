@@ -1,7 +1,7 @@
 # Smart Apartment & Masjid Fund Management System
 
 A Flask-based web application with two modules:
-1. **Apartment Management** — manage apartments, residents, complaints, maintenance, and announcements
+1. **Apartment** — manage apartments, residents, complaints, maintenance, and announcements
 2. **Masjid Fund Management** — track donations (no donor names), expenses, and balance
 
 Built for beginners — clean code, simple logic, lots of comments.
@@ -77,7 +77,7 @@ appartment/
 - Two roles: **admin** and **resident**
 - Protected routes with `@login_required`
 
-### Apartment Management
+### Apartment
 | Feature | What it does |
 |---|---|
 | Add Apartment | Register a unit with owner details |
@@ -131,3 +131,22 @@ On every push, GitHub Actions:
 - **Frontend:** Tailwind CSS, Jinja2, JavaScript
 - **Database:** SQLite (dev) / PostgreSQL (prod)
 - **DevOps:** Docker, GitHub Actions
+
+---
+
+## Production Deployment
+
+```bash
+# Set environment variables
+export SECRET_KEY="your-strong-secret-key"
+export DATABASE_URL="postgresql://user:password@localhost:5432/apartment_db"
+```
+
+| Step | Command |
+|---|---|
+| Build Tailwind CSS | `npm run build:css` |
+| Run with Gunicorn | `gunicorn -w 4 -b 0.0.0.0:8000 run:app` |
+| Docker Compose | `docker-compose up -d --build` |
+| Create admin user | `python seed_admin.py` |
+
+Login at `http://localhost:8000/auth/login` with **admin / admin123**.

@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 {% block title %}Edit Maintenance Request{% endblock %}
 {% block content %}
-<div class="max-w-lg mx-auto bg-white p-6 rounded shadow">
+<div class="max-w-lg mx-auto bg-gray-900 p-6 rounded shadow text-gray-100">
     <h2 class="text-2xl font-bold mb-4">Edit Maintenance Request</h2>
     <form method="POST">
         <div class="mb-3">
-            <label class="block text-sm font-medium">Apartment</label>
-            <select name="apartment_id" disabled class="w-full border rounded px-3 py-2 bg-gray-100">
+            <label class="block text-sm font-medium text-gray-300">Apartment</label>
+            <select name="apartment_id" disabled class="w-full border border-gray-600 rounded px-3 py-2 bg-gray-700 text-gray-400">
                 {% for a in apartments %}
                 <option value="{{ a.id }}" {{ 'selected' if a.id == mr.apartment_id }}>{{ a.unit_no }}</option>
                 {% endfor %}
             </select>
         </div>
-        <div class="mb-3"><label class="block text-sm font-medium">Title</label><input name="title" value="{{ mr.title }}" required class="w-full border rounded px-3 py-2"></div>
-        <div class="mb-3"><label class="block text-sm font-medium">Description</label><textarea name="description" class="w-full border rounded px-3 py-2">{{ mr.description or '' }}</textarea></div>
+        <div class="mb-3"><label class="block text-sm font-medium text-gray-300">Title</label><input name="title" value="{{ mr.title }}" required class="w-full border border-gray-600 rounded px-3 py-2 bg-gray-800 text-gray-100"></div>
+        <div class="mb-3"><label class="block text-sm font-medium text-gray-300">Description</label><textarea name="description" class="w-full border border-gray-600 rounded px-3 py-2 bg-gray-800 text-gray-100">{{ mr.description or '' }}</textarea></div>
         <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update</button>
-        <a href="{{ url_for('apartment.maintenance') }}" class="ml-2 text-gray-600">Cancel</a>
+        <a href="{{ url_for('apartment.maintenance') }}" class="ml-2 text-gray-400 hover:text-gray-300">Cancel</a>
     </form>
 </div>
 {% endblock %}

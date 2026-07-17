@@ -2,15 +2,16 @@ from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
-from config import Config
+from config import config
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 
 
-def create_app():
+def create_app(config_name=None):
     app = Flask(__name__)
-    app.config.from_object(Config)
+    cfg = config.get(config_name, config['default'])
+    app.config.from_object(cfg)
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -29,9 +30,6 @@ def create_app():
         return redirect(url_for('auth.login'))
 
     with app.app_context():
-        from models.user import User
-        from models.apartment import Apartment, Resident, Complaint, MaintenanceRequest, Announcement
-        from models.masjid import Donation, Expense
         db.create_all()
 
     return app

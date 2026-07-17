@@ -4,7 +4,9 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./instance:/app/instance
+      - app_data:/app/instance
     environment:
       - SECRET_KEY=change-this-in-production
-      - DATABASE_URL=sqlite:///app.db
+
+volumes:
+  app_data:

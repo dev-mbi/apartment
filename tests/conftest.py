@@ -1,28 +1,11 @@
-import os
-import tempfile
 import pytest
-from sqlalchemy.pool import StaticPool
 
 
 @pytest.fixture
 def app():
-    from config import Config
-
-    old_uri = Config.SQLALCHEMY_DATABASE_URI
-    Config.SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
-    old_engine_opts = getattr(Config, 'SQLALCHEMY_ENGINE_OPTIONS', None)
-    Config.SQLALCHEMY_ENGINE_OPTIONS = {'poolclass': StaticPool}
-
-    from app import create_app, db as _db
-    application = create_app()
-
+    from app import create_app
+    application = create_app('testing')
     yield application
-
-    Config.SQLALCHEMY_DATABASE_URI = old_uri
-    if old_engine_opts is not None:
-        Config.SQLALCHEMY_ENGINE_OPTIONS = old_engine_opts
-    else:
-        del Config.SQLALCHEMY_ENGINE_OPTIONS
 
 
 @pytest.fixture
