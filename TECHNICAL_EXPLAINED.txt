@@ -1,0 +1,241 @@
+================================================================================
+  HOW THIS APP WORKS — TECHNICAL EXPLANATION IN PLAIN ENGLISH
+================================================================================
+
+1. WHAT TECHNOLOGIES ARE USED?
+-------------------------------
+  Python Flask      → The main engine. Handles all the logic behind the scenes.
+  SQLite            → The database (a single file on your computer that stores 
+                      all data — apartments, users, donations, etc.)
+  SQLAlchemy        → The tool that lets Python talk to the database easily
+  Flask-Login       → Handles login/logout and remembers who is signed in
+  Tailwind CSS      → Makes the website look good (colors, spacing, layout)
+  Gunicorn          → The production server (like a professional waiter serving 
+                      your web pages to visitors)
+  Docker            → Packs everything into a container so anyone can run it
+  GitHub Actions    → Automatically tests the code every time you push changes
+
+
+2. HOW IS THE APP STRUCTURED? (MVC Pattern)
+---------------------------------------------
+  The app follows "MVC" — a standard way to organize web apps:
+
+  MODEL  (models/ folder)     → Database tables
+  VIEW   (templates/ folder)  → HTML pages you see in the browser
+  CONTROLLER (routes/ folder) → Logic that connects models to views
+
+  Example: When you click "Add Apartment":
+    1. Browser sends a request to the server
+    2. The route (apartment_routes.py) receives it
+    3. It tells the model (apartment.py) to save to database
+    4. It shows you a page (template) saying "Success!"
+
+
+3. HOW DOES A REQUEST FLOW?
+----------------------------
+  You → Browser → Internet → Gunicorn → Flask → Route → Model → Database
+                                                          ↓
+  You ← Browser ← Internet ← Gunicorn ← Flask ← Template ←─┘
+
+  Step by step:
+  1. You type http://localhost:5000/auth/login in your browser
+  2. Browser sends a GET request to the server
+  3. Gunicorn (the web server) receives it and passes it to Flask
+  4. Flask checks which route matches: auth_routes.py → login()
+  5. The route function runs — it gets the login form template
+  6. Flask sends the HTML back through Gunicorn to your browser
+  7. Your browser shows the login page
+
+  When you submit the form (POST request):
+  1. Browser sends username and password to the server
+  2. Flask-Login checks if the password is correct
+  3. If correct, it creates a session (like a temporary ID card)
+  4. Your browser stores a cookie with that session ID
+  5. On every next request, your browser sends that cookie
+  6. The server knows who you are without asking for password again
+
+
+4. WHAT DOES EACH FILE DO?
+---------------------------
+  FILE                    JOB
+  ─────────────────────── ─────────────────────────────────────────────────
+  app.py                  Creates the Flask app, connects database,
+                          registers all routes, creates tables
+
+  config.py               Settings — which database to use, secret key
+
+  run.py                  Starts the development server (uses gunicorn)
+
+  seed_admin.py           Creates the first admin user (admin/admin123)
+
+  requirements.txt        List of Python packages needed (like ingredients)
+
+  Dockerfile              Recipe to build the container
+
+  docker-compose.yml      Easy way to run: "docker compose up -d"
+
+  entrypoint.sh           Runs when container starts — seeds admin, 
+                          then starts the server
+
+  models/user.py          Defines the "User" table in the database
+                          (id, username, email, password, role)
+
+  models/apartment.py     Defines 5 tables:
+                            - Apartment (unit_no, floor, owner)
+                            - Resident (links user to apartment)
+                            - Complaint (title, description, status)
+                            - MaintenanceRequest (title, status)
+                            - Announcement (title, content, author)
+
+  models/masjid.py        Defines 2 tables:
+                            - Donation (amount, note)
+                            - Expense (amount, category, description)
+
+  routes/auth_routes.py   Handles: /login, /register, /logout, /dashboard
+
+  routes/apartment_routes.py  Handles: /apartment/, /apartment/add,
+                              /apartment/complaints, /apartment/maintenance,
+                              /apartment/announcements
+
+  routes/masjid_routes.py Handles: /masjid/, donations, expenses
+
+  templates/              All HTML files (20+ pages)
+                            - base.html (main layout with sidebar)
+                            - login.html, register.html
+                            - dashboard.html
+                            - apartment/*.html (11 pages)
+                            - masjid/*.html (5 pages)
+
+  static/css/input.css    Tailwind source file
+  static/css/output.css   Compiled CSS (what the browser actually uses)
+
+  tests/                  Automated tests (23 tests that run automatically)
+
+  .github/workflows/      CI configuration (runs tests on every git push)
+
+
+5. HOW DOES LOGIN WORK?
+------------------------
+  1. You enter username + password
+  2. Flask hashes the password (scrambles it) and compares with stored hash
+  3. If match → Flask-Login creates a session, stored in a browser cookie
+  4. The cookie is sent with every request so you stay logged in
+  5. When you logout, the cookie is deleted
+
+  Passwords are NEVER stored in plain text — only scrambled hashes.
+
+
+6. HOW DOES THE DATABASE WORK?
+-------------------------------
+  By default, it uses SQLite — a single file called "app.db"
+  You can switch to PostgreSQL by setting the DATABASE_URL environment variable
+
+  The database has 8 tables:
+    ┌──────────┐    ┌──────────┐
+    │   User   │    │Apartment │
+    ├──────────┤    ├──────────┤
+    │ id       │    │ id       │
+    │ username │    │ unit_no  │
+    │ email    │    │ floor    │
+    │ password │    │ owner    │
+    │ role     │    └────┬─────┘
+    └────┬─────┘         │
+         │               │
+    ┌────┴──────┐  ┌─────┴──────────┐
+    │ Resident  │  │ Complaint      │
+    │ user_id ──┤  │ apartment_id ──┤
+    │ apt_id ───┤  │ title          │
+    └───────────┘  │ status         │
+                   └────────────────┘
+                   ┌────────────────┐
+                   │MaintenanceReq  │
+                   │ apartment_id ──┤
+                   │ title          │
+                   │ status         │
+                   └────────────────┘
+    ┌──────────┐  ┌──────────┐
+    │ Donation │  │ Expense  │
+    ├──────────┤  ├──────────┤
+    │ amount   │  │ amount   │
+    │ note     │  │ category │
+    └──────────┘  │ desc     │
+                  └──────────┘
+    ┌──────────────┐
+    │ Announcement │
+    │ title        │
+    │ content      │
+    │ author_id ───┤──→ User.id
+    └──────────────┘
+
+
+7. HOW DOES TAILWIND CSS WORK?
+-------------------------------
+  Tailwind is a CSS framework. Instead of writing custom CSS, you use 
+  pre-made classes directly in HTML:
+
+    <div class="bg-gray-900 text-white p-4 rounded-lg shadow">
+    <!-- bg-gray-900  = dark background
+         text-white    = white text
+         p-4           = padding
+         rounded-lg    = rounded corners
+         shadow        = drop shadow -->
+
+  The CSS is built from static/css/input.css using:
+    npm run build:css
+
+  This reads all the templates, finds the class names, and generates 
+  only the CSS that's actually used (smaller file size).
+
+
+8. HOW DOES DOCKER WORK?
+-------------------------
+  Docker packages the entire app into a container — like a shipping 
+  container that has everything inside: Python, packages, code, CSS.
+
+  Dockerfile tells Docker how to build the container:
+    1. Start with Python 3.12
+    2. Install Node.js to build Tailwind CSS
+    3. Copy all the code
+    4. Install Python packages
+    5. Build the CSS
+    6. Remove Node.js (no longer needed)
+    7. Set the command to run when container starts
+
+  docker-compose.yml adds settings:
+    1. Build the container
+    2. Expose port 5000
+    3. Mount app.db so data persists when container restarts
+    4. Set environment variables
+
+  entrypoint.sh runs when you start the container:
+    1. Creates admin user (if not already created)
+    2. Starts the gunicorn server
+
+
+9. HOW DOES CI/CD WORK?
+------------------------
+  Every time you push code to GitHub, GitHub Actions runs:
+    1. Checkout the code
+    2. Install Python 3.12
+    3. Install Node.js
+    4. Install Python packages (pip install)
+    5. Install npm packages and build CSS
+    6. Run linter (ruff) to check code quality
+    7. Test: try to start the app (import test)
+    8. Run all 23 automated tests (pytest)
+
+  If any step fails, you get an email. This makes sure nothing breaks 
+  when you make changes.
+
+
+10. HOW TO ADD NEW FEATURES?
+-----------------------------
+  To add a new page/feature, you need to touch 3 things:
+
+  1. MODEL — Add/update a table in models/*.py (the database structure)
+  2. ROUTE — Add a function in routes/*.py (the logic/URL)
+  3. TEMPLATE — Add/update an HTML file in templates/ (what user sees)
+
+  That's it. The MVC pattern keeps everything organized.
+
+================================================================================
