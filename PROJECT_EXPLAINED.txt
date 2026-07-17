@@ -1,0 +1,100 @@
+================================================================================
+  SMART APARTMENT & MASJID FUND SYSTEM — SIMPLE EXPLANATION
+================================================================================
+
+WHAT IS THIS?
+-------------
+This is a web app (website) that helps manage two things:
+1. An apartment building — track units, residents, complaints, maintenance
+2. A masjid (mosque) fund — track donations, expenses, balance
+
+It runs on your own computer (localhost) or on a server. You log in with a 
+username and password.
+
+WHO CAN USE IT?
+---------------
+- Admin: can do everything — add/edit/delete anything, register new users
+- Resident: can view information but has limited access
+
+Login: admin / admin123  (change this in production)
+
+WHAT CAN YOU DO?
+----------------
+APARTMENT MODULE:
+  - Add/view/edit/delete apartment units (like A-101, B-202)
+  - Add residents to apartments
+  - Register complaints (leaky faucet, etc.) and mark them resolved
+  - Request maintenance (AC broken, etc.) and track status
+  - Post announcements visible to everyone
+
+MASJID FUND MODULE:
+  - Record donations (no donor name required — anonymous)
+  - Record expenses with categories (Electricity, Water, etc.)
+  - See total balance automatically calculated
+  - Edit/delete transactions
+
+DASHBOARD:
+  - See all stats on one page — total units, residents, complaints, fund balance
+  - Quick links to both modules
+
+HOW TO RUN IT?
+--------------
+EASIEST WAY (Docker):
+  1. Install Docker on your computer
+  2. Open terminal in this folder
+  3. Run:  docker compose up -d
+  4. Open browser to: http://localhost:5000
+
+WITHOUT DOCKER:
+  1. Make sure Python 3.12 and Node.js are installed
+  2. Install Python packages:  pip install -r requirements.txt
+  3. Install & build Tailwind CSS:  npm install && npm run build:css
+  4. Seed admin user:  python seed_admin.py
+  5. Run server:  python run.py
+  6. Open browser to: http://localhost:5000
+
+FILE STRUCTURE (simple version):
+--------------------------------
+  app.py              — main app file that ties everything together
+  config.py           — settings (database, secret key)
+  run.py              — starts the server
+  seed_admin.py       — creates the admin account
+  requirements.txt    — list of Python packages needed
+  
+  models/             — database structure (tables)
+    user.py           — users table
+    apartment.py      — apartments, residents, complaints, maintenance, announcements
+    masjid.py         — donations and expenses
+    
+  routes/             — page logic (what happens when you visit a URL)
+    auth_routes.py    — login, logout, register, dashboard
+    apartment_routes.py — apartment features
+    masjid_routes.py  — masjid fund features
+    
+  templates/          — HTML pages (what you see in browser)
+  static/             — CSS styles and JavaScript
+  
+  tests/              — automated tests to make sure things work
+  Dockerfile          — instructions to build the container
+  docker-compose.yml  — easy way to run with Docker
+
+TECHNICAL STUFF (for nerds):
+-----------------------------
+  - Python Flask framework (web server)
+  - SQLite database (stored in app.db file)
+  - Also supports PostgreSQL via DATABASE_URL environment variable
+  - Tailwind CSS for styling (looks good on phone and computer)
+  - Gunicorn as the production web server
+  - Dark theme throughout
+  - CI/CD via GitHub Actions (automatic testing on every push)
+
+WHAT WAS ADDED/FIXED LATELY:
+-----------------------------
+  - Dark/black theme across all pages
+  - PostgreSQL config support (set DATABASE_URL env var)
+  - Announcement edit/delete + tests
+  - Proper Docker setup (Dockerfile, compose, entrypoint)
+  - CI fixed for newer GitHub Actions runners
+  - Container ready to deploy anywhere
+
+================================================================================
