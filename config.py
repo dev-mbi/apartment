@@ -24,9 +24,7 @@ class Config:
                 'pool_pre_ping': True,
             }
     else:
-        _db_dir = os.path.join(basedir, 'instance')
-        os.makedirs(_db_dir, exist_ok=True)
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_db_dir, 'app.db')
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
         SQLALCHEMY_ENGINE_OPTIONS = {
             'connect_args': {'check_same_thread': False},
         }
