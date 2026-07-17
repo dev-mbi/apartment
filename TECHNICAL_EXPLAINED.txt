@@ -2,6 +2,84 @@
   HOW THIS APP WORKS — TECHNICAL EXPLANATION IN PLAIN ENGLISH
 ================================================================================
 
+═══ SYSTEM ARCHITECTURE GRAPH ═══
+(Read from bottom to top — how a request flows)
+
+```mermaid
+graph TB
+    %% LAYER 1 — USER / INPUT
+    User["👤 User (Browser)"]
+    HTTP["🌐 HTTP Request (GET/POST)"]
+
+    %% LAYER 2 — WEB SERVER
+    Gunicorn["⚡ Gunicorn Web Server<br/>Listens on port 5000<br/>Handles multiple requests"]
+    Flask["🟦 Flask App<br/>app.py — create_app()<br/>Initializes everything"]
+
+    %% LAYER 3 — AUTHENTICATION
+    Login["🔐 Flask-Login<br/>Manages sessions<br/>Login / Logout / Cookies"]
+    Session["🍪 Browser Cookie<br/>(session ID)"]
+
+    %% LAYER 4 — ROUTES (Controllers)
+    AuthRoute["📁 auth_routes.py<br/>/login /register /logout<br/>/dashboard"]
+    AptRoute["📁 apartment_routes.py<br/>/apartment/*<br/>11 URL routes"]
+    MasjidRoute["📁 masjid_routes.py<br/>/masjid/*<br/>5 URL routes"]
+
+    %% LAYER 5 — BUSINESS LOGIC
+    Models["🗄️ SQLAlchemy Models<br/>models/user.py<br/>models/apartment.py<br/>models/masjid.py"]
+
+    %% LAYER 6 — DATABASE
+    SQLite["💾 SQLite (app.db)<br/>8 tables<br/>OR PostgreSQL"]
+
+    %% LAYER 7 — VIEW / OUTPUT
+    Jinja["📄 Jinja2 Templates<br/>templates/*.html<br/>20+ pages"]
+    Tailwind["🎨 Tailwind CSS<br/>Dark theme<br/>Responsive design"]
+    Response["📨 HTML Response<br/>Back to browser"]
+
+    %% CONNECTIONS (neural network style)
+    User --> HTTP
+    HTTP --> Gunicorn
+    Gunicorn --> Flask
+
+    Flask --> Login
+    Login --> Session
+    Session -.->|"sent with every request"| HTTP
+
+    Flask --> AuthRoute
+    Flask --> AptRoute
+    Flask --> MasjidRoute
+
+    AuthRoute --> Models
+    AptRoute --> Models
+    MasjidRoute --> Models
+
+    Models --> SQLite
+    SQLite -.->|"query results"| Models
+
+    Models --> Jinja
+    Jinja --> Tailwind
+    Tailwind --> Response
+    Response --> User
+
+    %% STYLING — make it look like a neural network
+    classDef input fill:#1a1a2e,color:#e0e0e0,stroke:#e94560,stroke-width:2px
+    classDef layer1 fill:#16213e,color:#e0e0e0,stroke:#0f3460,stroke-width:2px
+    classDef layer2 fill:#0f3460,color:#e0e0e0,stroke:#533483,stroke-width:2px
+    classDef layer3 fill:#533483,color:#e0e0e0,stroke:#e94560,stroke-width:2px
+    classDef layer4 fill:#2d4059,color:#e0e0e0,stroke:#ea5455,stroke-width:2px
+    classDef layer5 fill:#222831,color:#e0e0e0,stroke:#00adb5,stroke-width:2px
+    classDef output fill:#1a1a2e,color:#e0e0e0,stroke:#00adb5,stroke-width:2px
+
+    class User input
+    class HTTP,Gunicorn,Flask layer1
+    class Login,Session layer2
+    class AuthRoute,AptRoute,MasjidRoute layer3
+    class Models layer4
+    class SQLite layer5
+    class Jinja,Tailwind,Response output
+```
+
+═══ END OF GRAPH ═══
+
 1. WHAT TECHNOLOGIES ARE USED?
 -------------------------------
   Python Flask      → The main engine. Handles all the logic behind the scenes.
