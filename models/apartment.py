@@ -45,3 +45,18 @@ class Announcement(db.Model):
     content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+
+class MaintenanceBill(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    apartment_id = db.Column(db.Integer, db.ForeignKey('apartment.id'), nullable=False)
+    month = db.Column(db.String(7), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    late_fee = db.Column(db.Float, default=0)
+    total = db.Column(db.Float, nullable=False)
+    due_date = db.Column(db.Date, nullable=False)
+    status = db.Column(db.String(20), default='unpaid')
+    generated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    paid_at = db.Column(db.DateTime, nullable=True)
+    notes = db.Column(db.Text)
+    apartment = db.relationship('Apartment', backref='bills')

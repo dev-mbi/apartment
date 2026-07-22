@@ -1,8 +1,10 @@
+from datetime import date, datetime, timezone
+
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 
 from app import db
-from models.apartment import Apartment, Resident, Complaint, MaintenanceRequest, Announcement
+from models.apartment import Apartment, Resident, Complaint, MaintenanceRequest, Announcement, MaintenanceBill
 from models.user import User
 
 apartment_bp = Blueprint('apartment', __name__, url_prefix='/apartment')
@@ -252,3 +254,103 @@ def delete_announcement(a_id):
     db.session.commit()
     flash('Announcement deleted', 'success')
     return redirect(url_for('apartment.announcements'))
+
+
+@apartment_bp.route('/bills')
+@login_required
+def bills():
+    month = request.args.get('month', '')
+    status_filter = request.args.get('status', '')
+    query = MaintenanceBill.query
+    if month:
+        query = query.filter(MaintenanceBill.month == month)
+    if status_filter:
+        query = query.filter(MaintenanceBill.status == status_filter)
+    bills = query.order_by(MaintenanceBill.month.desc(), MaintenanceBill.apartment_id).all()
+    apartments = Apartment.query.all()
+    months = db.session.query(MaintenanceBill.month).distinct().order_by(MaintenanceBill.month.desc()).all()
+    return render_template('apartment/bills.html', **locals())
+
+
+@apartment_bp.route('/bills/generate', methods=['GET', 'POST'])
+@login_required
+def generate_bills():
+    if current_user.role != 'admin':
+        flash('Only admins can generate bills', 'error')
+        return redirect(url_for('apartment.bills'))
+    if request.method == 'POST':
+        month = request.form['month']
+        amount = request.form.get('amount', type=float)
+        due_date_str = request.form['due_date']
+        late_fee = request.form.get('late_fee', 0, type=float)
+        if not month or not amount or not due_date_str:
+            flash('Month, amount, and due date are required', 'error')
+            return render_template('apartment/generate_bill.html')
+        apartments = Apartment.query.all()
+        if not apartments:
+            flash('No apartments found to generate bills for', 'error')
+            return render_template('apartment/generate_bill.html')
+        existing = MaintenanceBill.query.filter_by(month=month).count()
+        if existing:
+            flash(f'Bills for {month} already exist ({existing} found). Delete them first to regenerate.', 'error')
+            return render_template('apartment/generate_bill.html', month=month, amount=amount, due_date=due_date_str, late_fee=late_fee)
+        due_date = date.fromisoformat(due_date_str)
+        total = amount + late_fee
+        count = 0
+        for apt in apartments:
+            bill = MaintenanceBill(
+                apartment_id=apt.id,
+                month=month,
+                amount=amount,
+                late_fee=late_fee,
+                total=total,
+                due_date=due_date,
+                status='unpaid'
+            )
+            db.session.add(bill)
+            count += 1
+        db.session.commit()
+        flash(f'Generated {count} maintenance bills for {month}', 'success')
+        return redirect(url_for('apartment.bills', month=month))
+    return render_template('apartment/generate_bill.html')
+
+
+@apartment_bp.route('/bills/<int:bill_id>')
+@login_required
+def view_bill(bill_id):
+    bill = MaintenanceBill.query.get_or_404(bill_id)
+    return render_template('apartment/print_bill.html', bill=bill)
+
+
+@apartment_bp.route('/bills/<int:bill_id>/print')
+@login_required
+def print_bill(bill_id):
+    bill = MaintenanceBill.query.get_or_404(bill_id)
+    return render_template('apartment/print_bill.html', bill=bill, printable=True)
+
+
+@apartment_bp.route('/bills/<int:bill_id>/pay', methods=['POST'])
+@login_required
+def pay_bill(bill_id):
+    if current_user.role != 'admin':
+        flash('Only admins can mark bills as paid', 'error')
+        return redirect(url_for('apartment.bills'))
+    bill = MaintenanceBill.query.get_or_404(bill_id)
+    bill.status = 'paid'
+    bill.paid_at = datetime.now(timezone.utc)
+    db.session.commit()
+    flash(f'Bill for {bill.apartment.unit_no} marked as paid', 'success')
+    return redirect(url_for('apartment.view_bill', bill_id=bill.id))
+
+
+@apartment_bp.route('/bills/<int:bill_id>/delete', methods=['POST'])
+@login_required
+def delete_bill(bill_id):
+    if current_user.role != 'admin':
+        flash('Only admins can delete bills', 'error')
+        return redirect(url_for('apartment.bills'))
+    bill = MaintenanceBill.query.get_or_404(bill_id)
+    db.session.delete(bill)
+    db.session.commit()
+    flash('Bill deleted', 'success')
+    return redirect(url_for('apartment.bills'))
