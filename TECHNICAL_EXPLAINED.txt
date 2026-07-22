@@ -21,17 +21,17 @@ graph TB
 
     %% LAYER 4 — ROUTES (Controllers)
     AuthRoute["📁 auth_routes.py<br/>/login /register /logout<br/>/dashboard"]
-    AptRoute["📁 apartment_routes.py<br/>/apartment/*<br/>11 URL routes"]
+    AptRoute["📁 apartment_routes.py<br/>/apartment/*<br/>17 URL routes"]
     MasjidRoute["📁 masjid_routes.py<br/>/masjid/*<br/>5 URL routes"]
 
     %% LAYER 5 — BUSINESS LOGIC
     Models["🗄️ SQLAlchemy Models<br/>models/user.py<br/>models/apartment.py<br/>models/masjid.py"]
 
     %% LAYER 6 — DATABASE
-    SQLite["💾 SQLite (app.db)<br/>8 tables<br/>OR PostgreSQL"]
+    SQLite["💾 SQLite (app.db)<br/>9 tables<br/>OR PostgreSQL"]
 
     %% LAYER 7 — VIEW / OUTPUT
-    Jinja["📄 Jinja2 Templates<br/>templates/*.html<br/>20+ pages"]
+    Jinja["📄 Jinja2 Templates<br/>templates/*.html<br/>23+ pages"]
     Tailwind["🎨 Tailwind CSS<br/>Dark theme<br/>Responsive design"]
     Response["📨 HTML Response<br/>Back to browser"]
 
@@ -158,12 +158,13 @@ graph TB
   models/user.py          Defines the "User" table in the database
                           (id, username, email, password, role)
 
-  models/apartment.py     Defines 5 tables:
+  models/apartment.py     Defines 6 tables:
                             - Apartment (unit_no, floor, owner)
                             - Resident (links user to apartment)
                             - Complaint (title, description, status)
                             - MaintenanceRequest (title, status)
                             - Announcement (title, content, author)
+                            - MaintenanceBill (society, month, amount, status)
 
   models/masjid.py        Defines 2 tables:
                             - Donation (amount, note)
@@ -173,21 +174,22 @@ graph TB
 
   routes/apartment_routes.py  Handles: /apartment/, /apartment/add,
                               /apartment/complaints, /apartment/maintenance,
-                              /apartment/announcements
+                              /apartment/announcements,
+                              /apartment/bills (list, generate, print, receipt, export CSV)
 
   routes/masjid_routes.py Handles: /masjid/, donations, expenses
 
-  templates/              All HTML files (20+ pages)
+  templates/              All HTML files (23+ pages)
                             - base.html (main layout with sidebar)
                             - login.html, register.html
                             - dashboard.html
-                            - apartment/*.html (11 pages)
+                            - apartment/*.html (14 pages)
                             - masjid/*.html (5 pages)
 
   static/css/input.css    Tailwind source file
   static/css/output.css   Compiled CSS (what the browser actually uses)
 
-  tests/                  Automated tests (23 tests that run automatically)
+  tests/                  Automated tests (23 unit tests + E2E tests)
 
   .github/workflows/      CI configuration (runs tests on every git push)
 
@@ -208,7 +210,7 @@ graph TB
   By default, it uses SQLite — a single file called "app.db"
   You can switch to PostgreSQL by setting the DATABASE_URL environment variable
 
-  The database has 8 tables:
+  The database has 9 tables:
     ┌──────────┐    ┌──────────┐
     │   User   │    │Apartment │
     ├──────────┤    ├──────────┤
@@ -230,6 +232,15 @@ graph TB
                    │ apartment_id ──┤
                    │ title          │
                    │ status         │
+                   └────────────────┘
+                   ┌────────────────┐
+                   │ MaintenanceBill │
+                   │ apartment_id ──┤
+                   │ society_name   │
+                   │ month, amount  │
+                   │ total, status  │
+                   │ due_date       │
+                   │ paid_at        │
                    └────────────────┘
     ┌──────────┐  ┌──────────┐
     │ Donation │  │ Expense  │

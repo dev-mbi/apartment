@@ -4,9 +4,16 @@
 <div class="max-w-2xl mx-auto">
     <div class="flex items-center justify-between gap-4 mb-6 no-print">
         <a href="{{ url_for('apartment.bills') }}" class="text-gray-400 hover:text-gray-200 transition"><i class="fas fa-arrow-left"></i> Back to Bills</a>
-        <button onclick="window.print()" class="inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white px-5 py-2.5 rounded-xl font-medium hover:from-primary-700 hover:to-primary-800 transition shadow-lg shadow-primary-500/25">
-            <i class="fas fa-print"></i> Print
-        </button>
+        <div class="flex gap-2">
+            {% if bill.status == 'paid' %}
+            <a href="{{ url_for('apartment.bill_receipt', bill_id=bill.id) }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-accent-500 to-emerald-600 text-white px-5 py-2.5 rounded-xl font-medium hover:from-accent-600 hover:to-emerald-700 transition shadow-lg shadow-accent-500/25">
+                <i class="fas fa-receipt"></i> Receipt
+            </a>
+            {% endif %}
+            <button onclick="window.print()" class="inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white px-5 py-2.5 rounded-xl font-medium hover:from-primary-700 hover:to-primary-800 transition shadow-lg shadow-primary-500/25">
+                <i class="fas fa-print"></i> Print
+            </button>
+        </div>
     </div>
 
     <div class="bg-white rounded-xl shadow-sm overflow-hidden print-bill">

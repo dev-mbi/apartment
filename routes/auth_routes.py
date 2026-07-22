@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -5,7 +7,7 @@ from sqlalchemy import func
 
 from app import db, login_manager
 from models.user import User
-from models.apartment import Apartment, Resident, Complaint
+from models.apartment import Apartment, Resident, Complaint, MaintenanceBill
 from models.masjid import Donation, Expense
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -74,4 +76,10 @@ def dashboard():
     total_donations = db.session.query(func.sum(Donation.amount)).scalar() or 0
     total_expenses = db.session.query(func.sum(Expense.amount)).scalar() or 0
     balance = total_donations - total_expenses
+    now = datetime.now(timezone.utc)
+    this_month = now.strftime('%Y-%m')
+    total_outstanding = db.session.query(func.sum(MaintenanceBill.total)).filter(MaintenanceBill.status == 'unpaid').scalar() or 0
+    collected_this_month = db.session.query(func.sum(MaintenanceBill.total)).filter(MaintenanceBill.status == 'paid', MaintenanceBill.month == this_month).scalar() or 0
+    total_billed = db.session.query(func.sum(MaintenanceBill.total)).filter(MaintenanceBill.month == this_month).scalar() or 0
+    collection_rate = round((collected_this_month / total_billed * 100) if total_billed > 0 else 0)
     return render_template('dashboard.html', **locals())

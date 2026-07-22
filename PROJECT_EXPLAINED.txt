@@ -26,6 +26,9 @@ APARTMENT MODULE:
   - Register complaints (leaky faucet, etc.) and mark them resolved
   - Request maintenance (AC broken, etc.) and track status
   - Post announcements visible to everyone
+  - Generate monthly maintenance bills for all apartments
+  - Mark bills as paid and print receipts
+  - Export bills to CSV
 
 MASJID FUND MODULE:
   - Record donations (no donor name required — anonymous)
@@ -35,6 +38,7 @@ MASJID FUND MODULE:
 
 DASHBOARD:
   - See all stats on one page — total units, residents, complaints, fund balance
+  - Outstanding bills total and monthly collection rate
   - Quick links to both modules
 
 HOW TO RUN IT?
@@ -61,14 +65,14 @@ FILE STRUCTURE (simple version):
   seed_admin.py       — creates the admin account
   requirements.txt    — list of Python packages needed
   
-  models/             — database structure (tables)
+    models/             — database structure (tables)
     user.py           — users table
-    apartment.py      — apartments, residents, complaints, maintenance, announcements
+    apartment.py      — apartments, residents, complaints, maintenance, announcements, bills
     masjid.py         — donations and expenses
     
-  routes/             — page logic (what happens when you visit a URL)
-    auth_routes.py    — login, logout, register, dashboard
-    apartment_routes.py — apartment features
+    routes/             — page logic (what happens when you visit a URL)
+    auth_routes.py    — login, logout, register, dashboard (with bill stats)
+    apartment_routes.py — apartment features + billing system
     masjid_routes.py  — masjid fund features
     
   templates/          — HTML pages (what you see in browser)
@@ -90,11 +94,13 @@ TECHNICAL STUFF (for nerds):
 
 WHAT WAS ADDED/FIXED LATELY:
 -----------------------------
+  - Maintenance bill system — generate monthly bills for all apartments
+  - Printable bills with clean print layout (black text)
+  - Society name field on bills
+  - Receipts for paid bills
+  - CSV export for bills
+  - Dashboard bill stats (outstanding, collection rate)
   - Dark/black theme across all pages
   - PostgreSQL config support (set DATABASE_URL env var)
-  - Announcement edit/delete + tests
-  - Proper Docker setup (Dockerfile, compose, entrypoint)
-  - CI fixed for newer GitHub Actions runners
-  - Container ready to deploy anywhere
 
 ================================================================================

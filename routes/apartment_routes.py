@@ -1,7 +1,10 @@
+import csv
 from datetime import date, datetime, timezone
+from io import StringIO
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, Response
 from flask_login import login_required, current_user
+from sqlalchemy import func
 
 from app import db
 from models.apartment import Apartment, Resident, Complaint, MaintenanceRequest, Announcement, MaintenanceBill
@@ -343,6 +346,51 @@ def pay_bill(bill_id):
     db.session.commit()
     flash(f'Bill for {bill.apartment.unit_no} marked as paid', 'success')
     return redirect(url_for('apartment.view_bill', bill_id=bill.id))
+
+
+@apartment_bp.route('/bills/<int:bill_id>/receipt')
+@login_required
+def bill_receipt(bill_id):
+    bill = MaintenanceBill.query.get_or_404(bill_id)
+    if bill.status != 'paid':
+        flash('Receipt is only available for paid bills', 'error')
+        return redirect(url_for('apartment.view_bill', bill_id=bill.id))
+    return render_template('apartment/receipt.html', bill=bill)
+
+
+@apartment_bp.route('/bills/export')
+@login_required
+def export_bills():
+    month = request.args.get('month', '')
+    status_filter = request.args.get('status', '')
+    query = MaintenanceBill.query
+    if month:
+        query = query.filter(MaintenanceBill.month == month)
+    if status_filter:
+        query = query.filter(MaintenanceBill.status == status_filter)
+    bills = query.order_by(MaintenanceBill.month.desc(), MaintenanceBill.apartment_id).all()
+
+    si = StringIO()
+    cw = csv.writer(si)
+    cw.writerow(['Bill ID', 'Apartment', 'Month', 'Amount', 'Late Fee', 'Total', 'Status', 'Due Date', 'Paid Date'])
+    for b in bills:
+        cw.writerow([
+            f'MB-{b.id:05d}',
+            b.apartment.unit_no,
+            b.month,
+            b.amount,
+            b.late_fee,
+            b.total,
+            b.status,
+            b.due_date.isoformat(),
+            b.paid_at.strftime('%Y-%m-%d') if b.paid_at else ''
+        ])
+
+    return Response(
+        si.getvalue(),
+        mimetype='text/csv',
+        headers={'Content-Disposition': 'attachment; filename=bills.csv'}
+    )
 
 
 @apartment_bp.route('/bills/<int:bill_id>/delete', methods=['POST'])

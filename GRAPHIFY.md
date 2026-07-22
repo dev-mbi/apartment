@@ -54,6 +54,21 @@ erDiagram
         int author_id FK
     }
 
+    MaintenanceBill {
+        int id PK
+        int apartment_id FK
+        string society_name
+        string month
+        float amount
+        float late_fee
+        float total
+        date due_date
+        string status
+        datetime generated_at
+        datetime paid_at
+        string notes
+    }
+
     Donation {
         int id PK
         float amount
@@ -74,6 +89,7 @@ erDiagram
     Apartment ||--o{ Resident : "houses"
     Apartment ||--o{ Complaint : "has"
     Apartment ||--o{ MaintenanceRequest : "has"
+    Apartment ||--o{ MaintenanceBill : "has"
 ```
 
 ## System Architecture
@@ -89,6 +105,7 @@ graph TD
     subgraph "Backend"
         Flask["Flask App Factory"]
         Blueprints["Blueprints<br/>(auth, apartment, masjid)"]
+        Services["Services<br/>(csv export, billing)"]
         Models["SQLAlchemy Models"]
     end
 
@@ -148,6 +165,30 @@ sequenceDiagram
     M->>DB: Query donations, expenses
     DB-->>M: Data
     M->>B: Render masjid page
+
+    U->>B: Click Bills
+    B->>F: GET /apartment/bills
+    F->>AP: Route to bills
+    AP->>DB: Query bills
+    DB-->>AP: Data
+    AP->>B: Render bills page
+
+    U->>B: Generate monthly bills
+    B->>F: POST /apartment/bills/generate
+    F->>AP: Generate bills
+    AP->>DB: Create bills for all apts
+    DB-->>AP: Success
+    AP->>B: Redirect to bills list
+
+    U->>B: Print bill
+    B->>F: GET /apartment/bills/1/print
+    F->>AP: View printable bill
+    AP->>B: Render print layout
+
+    U->>B: Print receipt
+    B->>F: GET /apartment/bills/1/receipt
+    F->>AP: View receipt
+    AP->>B: Render receipt layout
 ```
 
 ## Deployment Flow
