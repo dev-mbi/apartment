@@ -280,6 +280,7 @@ def generate_bills():
         return redirect(url_for('apartment.bills'))
     if request.method == 'POST':
         month = request.form['month']
+        society_name = request.form.get('society_name', '').strip()
         amount = request.form.get('amount', type=float)
         due_date_str = request.form['due_date']
         late_fee = request.form.get('late_fee', 0, type=float)
@@ -293,13 +294,14 @@ def generate_bills():
         existing = MaintenanceBill.query.filter_by(month=month).count()
         if existing:
             flash(f'Bills for {month} already exist ({existing} found). Delete them first to regenerate.', 'error')
-            return render_template('apartment/generate_bill.html', month=month, amount=amount, due_date=due_date_str, late_fee=late_fee)
+            return render_template('apartment/generate_bill.html', month=month, society_name=society_name, amount=amount, due_date=due_date_str, late_fee=late_fee)
         due_date = date.fromisoformat(due_date_str)
         total = amount + late_fee
         count = 0
         for apt in apartments:
             bill = MaintenanceBill(
                 apartment_id=apt.id,
+                society_name=society_name,
                 month=month,
                 amount=amount,
                 late_fee=late_fee,

@@ -17,6 +17,10 @@
         <div class="p-6">
             <form method="POST" class="space-y-4">
                 <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Society / Building Name</label>
+                    <input type="text" name="society_name" value="{{ society_name or '' }}" placeholder="e.g. Al-Falah Apartments" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2.5 text-gray-200 focus:ring-2 focus:ring-primary-500 outline-none">
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-300 mb-1">Month <span class="text-red-400">*</span></label>
                     <input type="month" name="month" value="{{ month or '' }}" required class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2.5 text-gray-200 focus:ring-2 focus:ring-primary-500 outline-none">
                     <p class="text-xs text-gray-500 mt-1">e.g. 2026-07</p>

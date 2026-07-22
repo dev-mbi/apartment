@@ -50,6 +50,7 @@ class Announcement(db.Model):
 class MaintenanceBill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     apartment_id = db.Column(db.Integer, db.ForeignKey('apartment.id'), nullable=False)
+    society_name = db.Column(db.String(200), default='')
     month = db.Column(db.String(7), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     late_fee = db.Column(db.Float, default=0)
